@@ -3,6 +3,9 @@ import sys
 import logging
 from .config import Config
 from .display import Display
+from .temp import TempSensor
+from .light import LightSensor
+from .sensordata import SensorData
 from picamera2 import Picamera2
 from time import sleep
 from datetime import datetime
@@ -15,6 +18,16 @@ size = (config['imaging'].getint('w'), config['imaging'].getint('h'))
 lens_position = config['imaging'].getfloat('lens_position')
 img_count = 0
 
+sensors = SensorData()
+light = LightSensor()
+temp = TempSensor()
+temp_data = {'temp': temp.temperature,
+            'humid': temp.humidity}
+light_data = light.data
+metadata = temp_data | light_data
+sensors.get_dict(metadata)
+print(sensors.data_dict)
+sensors.create_csv()
 disp = Display()
 disp.display_msg('Initializing', img_count)
 
